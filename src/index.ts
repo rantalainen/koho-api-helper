@@ -1,8 +1,5 @@
 import { default as got } from 'got';
 
-import { HttpsAgent } from 'agentkeepalive';
-const keepAliveAgent = new HttpsAgent();
-
 import { CustomerMethods } from './methods/customer.methods';
 import { PersonMethods } from './methods/person.methods';
 import { InvoiceMethods } from './methods/invoice.methods';
@@ -28,12 +25,16 @@ import { WorkSessionShiftTypeMethods } from './methods/work-session-shift-types.
 import { CustomReportMethods } from './methods/custom-report.methods';
 import { CompanyMethods } from './methods/company.methods';
 import { AccountingAssignmentMethods } from './methods/accounting-assignment.methods';
+import https from 'https';
 
 type KohoApiHelperOptions = {
   token: string;
   companyId?: number;
   enterpriseId?: number;
   url?: string;
+
+  /** Request timeout, can be changed before request, defaults to 30000 */
+  timeout?: number;
 
   /** Set to true if keepalive https-agent should be used with http requests to Koho */
   useKeepAliveAgent?: boolean;
@@ -48,6 +49,10 @@ type KohoApiHelperOptions = {
 export class KohoApiHelper {
   [propName: string]: any;
   options: any;
+
+  keepAliveAgent: https.Agent = new https.Agent({
+    keepAlive: true
+  });
 
   readonly accountingTargets: AccountingTargetMethods;
   readonly customers: CustomerMethods;
@@ -86,8 +91,12 @@ export class KohoApiHelper {
       throw new Error('No Company ID or enterpriseId specified');
     }
 
+    if ( ! this.options.timeout) {
+      this.options.timeout = 30000;
+    }
+
     if (! this.options.url) {
-      this.options.url = 'https://suite-beta.koho-online.com/api';
+      this.options.url = 'https://suite.koho-online.com/api';
     }
 
     this.accountingTargets = new AccountingTargetMethods(this);
@@ -133,7 +142,7 @@ export class KohoApiHelper {
     }
 
     if (this.options?.useKeepAliveAgent === true) {
-      gotOptions.agent = { https: keepAliveAgent };
+      gotOptions.agent = { https: this.keepAliveAgent };
     }
 
     if (this.options?.disableStreaming !== true && disableStreaming !== true && gotOptions.method === 'GET') {
@@ -141,9 +150,13 @@ export class KohoApiHelper {
       gotOptions.searchParams.stream = true;
     }
 
+    // Include token in headers
+    gotOptions.headers = gotOptions.headers || {};
+    gotOptions.headers.token = this.options.token;
+
     // Default retry options
     if ( ! gotOptions.retry) {
-      gotOptions.retry = 5;
+      gotOptions.retry = 2;
     }
 
     return { ...gotOptions, ...this.overrideGotOptions };
@@ -174,9 +187,7 @@ export class KohoApiHelper {
   }
 
   get _authParams() {
-    const params : any = {
-      token : this.options.token
-    }
+    const params : any = {}
 
     if (this.options.enterpriseId) {
       params.enterprise_id = this.options.enterpriseId;

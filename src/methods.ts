@@ -59,6 +59,9 @@ export class Methods {
     }
 
     const result = await this.request(this._uri, 'POST', this._generateProperties(properties));
+
+    console.log(result);
+
     const resultId = result.id;
     const resource = await this.getById(resultId);
 
