@@ -25,7 +25,7 @@ import { WorkSessionShiftTypeMethods } from './methods/work-session-shift-types.
 import { CustomReportMethods } from './methods/custom-report.methods';
 import { CompanyMethods } from './methods/company.methods';
 import { AccountingAssignmentMethods } from './methods/accounting-assignment.methods';
-import https from 'https';
+import * as https from 'https';
 
 type KohoApiHelperOptions = {
   token: string;
