@@ -1,7 +1,7 @@
 import { KohoApiHelper } from "..";
 import { Resource } from '../resource'; 
 
-export interface ProjectTemplateProperties {
+export interface ProjectProjectTemplateProperties {
   id: number;
   name?: string;
 }
@@ -26,7 +26,7 @@ export interface ProjectProperties {
   description?: string;
   category_id?: number;
   category_name?: string;
-  templates?: ProjectTemplateProperties[];
+  templates?: ProjectProjectTemplateProperties[];
   plan_id?: number;
   participations: ProjectParticipationProperties[];
   price_per_hour?: number;

@@ -1,6 +1,6 @@
 {
   "name": "koho-api-helper",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Koho Sales API helper library",
   "main": "dist/index.js",
   "scripts": {

@@ -26,6 +26,7 @@ import { CustomReportMethods } from './methods/custom-report.methods';
 import { CompanyMethods } from './methods/company.methods';
 import { AccountingAssignmentMethods } from './methods/accounting-assignment.methods';
 import * as https from 'https';
+import { ProjectTemplateMethods } from './methods/project-template.methods';
 
 type KohoApiHelperOptions = {
   token: string;
@@ -79,6 +80,7 @@ export class KohoApiHelper {
   readonly customReports: CustomReportMethods;
   readonly companies: CompanyMethods;
   readonly accountingAssignments: AccountingAssignmentMethods;
+  readonly projectTemplates: ProjectTemplateMethods;
 
   constructor(options: KohoApiHelperOptions) {
     this.options = options || {};
@@ -124,6 +126,9 @@ export class KohoApiHelper {
     this.customReports = new CustomReportMethods(this);
     this.companies = new CompanyMethods(this);
     this.accountingAssignments = new AccountingAssignmentMethods(this);
+
+    /** projectTemplates functionality is experimental */
+    this.projectTemplates = new ProjectTemplateMethods(this);
   }
 
   private _setupRequest(url: string, method?: string, data?: any, params?: any, options?: any, disableStreaming?: boolean) {
