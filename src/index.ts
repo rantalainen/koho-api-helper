@@ -28,6 +28,15 @@ import { AccountingAssignmentMethods } from './methods/accounting-assignment.met
 import * as https from 'https';
 import { ProjectTemplateMethods } from './methods/project-template.methods';
 
+// delay function
+const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
+export interface KohoThrottleOptions {
+  maxRetries: number;
+  delay: number;
+  enabled: boolean;
+}
+
 type KohoApiHelperOptions = {
   token: string;
   companyId?: number;
@@ -45,6 +54,9 @@ type KohoApiHelperOptions = {
 
   /** Set to true to disable streaming for GET requests (added in 2.0.0) */
   disableStreaming?: boolean;
+
+  /** Set Koho throttling options, defaults to retry 3 times on throttle with 15000ms delay */
+  throttleOptions?: KohoThrottleOptions;
 }
 
 export class KohoApiHelper {
@@ -100,6 +112,14 @@ export class KohoApiHelper {
     if (! this.options.url) {
       this.options.url = 'https://suite.koho-online.com/api';
     }
+
+    this.options.throttleOptions = {
+      maxRetries: 3,
+      delay: 15000,
+      enabled: true,
+      
+      ...options.throttleOptions
+    };
 
     this.accountingTargets = new AccountingTargetMethods(this);
     this.customers = new CustomerMethods(this);
@@ -167,10 +187,24 @@ export class KohoApiHelper {
     return { ...gotOptions, ...this.overrideGotOptions };
   }
 
+  async _retryRequestOnThrottle(maxRetries: number, fn: any): Promise<any> {
+    const result = await fn();
+    
+    if (this.options.throttleOptions.enabled === true && result.throttle === true && maxRetries > 0) {
+      await delay(this.options.throttleOptions.delay);
+
+      return this._retryRequestOnThrottle(maxRetries - 1, fn);
+    } else {
+      return result;
+    }
+  }
+
   async request(url: string, method?: string, data?: any, params?: any, options?: any) : Promise<any> {
     const gotOptions = this._setupRequest(url, method, data, params, options);
 
-    const result: any = await got(url, gotOptions).json();
+    const result: any = await this._retryRequestOnThrottle(this.options.throttleOptions.maxRetries, () => 
+      got(url, gotOptions).json()
+    );
 
     if (result?.status === 'error') {
       throw new Error(result.message);

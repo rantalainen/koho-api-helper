@@ -37,7 +37,14 @@ const kohoApiHelperOptions = {
   useKeepAliveAgent : true, // If you are spamming multiple requests to Koho, you should set this to true so that connections are reused
 
   // Added in 2.0.0, disable streaming for Koho GET requests, defaults to false and GET requests are streamed
-  disableStreaming : true
+  disableStreaming : true,
+
+  // Added in 3.1.0, optional throttleOptions
+  throttleOptions : {
+    enabled : true, // default: true
+    delay: 30000,   // default: 15000
+    maxRetries: 1   // default: 3
+  }
 
 }
 
@@ -166,6 +173,7 @@ const customer = await helper.customers.create({
 * 2.1.0 Add support for offer notifications (extends notifications methods)
 * 3.0.0 Update streaming and keepAliveAgent handling
 * 3.0.3 Add projectTemplates (experimental)
+* 3.1.0 Add throttle handling and throttleOptions to normal requests
 
 ## Miscellaneous examples
 
