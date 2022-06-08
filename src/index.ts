@@ -29,7 +29,7 @@ import * as https from 'https';
 import { ProjectTemplateMethods } from './methods/project-template.methods';
 
 // delay function
-const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export interface KohoThrottleOptions {
   maxRetries: number;
@@ -57,7 +57,7 @@ type KohoApiHelperOptions = {
 
   /** Set Koho throttling options, defaults to retry 3 times on throttle with 15000ms delay */
   throttleOptions?: KohoThrottleOptions;
-}
+};
 
 export class KohoApiHelper {
   [propName: string]: any;
@@ -97,19 +97,19 @@ export class KohoApiHelper {
   constructor(options: KohoApiHelperOptions) {
     this.options = options || {};
 
-    if ( ! this.options.token) {
+    if (!this.options.token) {
       throw new Error('No API token specified');
     }
 
-    if ( ! this.options.companyId && ! this.options.enterpriseId) {
+    if (!this.options.companyId && !this.options.enterpriseId) {
       throw new Error('No Company ID or enterpriseId specified');
     }
 
-    if ( ! this.options.timeout) {
+    if (!this.options.timeout) {
       this.options.timeout = 30000;
     }
 
-    if (! this.options.url) {
+    if (!this.options.url) {
       this.options.url = 'https://suite.koho-online.com/api';
     }
 
@@ -117,7 +117,7 @@ export class KohoApiHelper {
       maxRetries: 3,
       delay: 15000,
       enabled: true,
-      
+
       ...options.throttleOptions
     };
 
@@ -152,7 +152,7 @@ export class KohoApiHelper {
   }
 
   private _setupRequest(url: string, method?: string, data?: any, params?: any, options?: any, disableStreaming?: boolean) {
-    if ( ! url) {
+    if (!url) {
       throw new Error('Missing URL for request');
     }
 
@@ -160,7 +160,7 @@ export class KohoApiHelper {
       method: method || 'GET',
       searchParams: { ...this._authParams, ...params },
       ...options
-    }
+    };
 
     if (gotOptions.method !== 'GET' && !options?.body && !options?.form) {
       gotOptions.json = data;
@@ -180,8 +180,13 @@ export class KohoApiHelper {
     gotOptions.headers.token = this.options.token;
 
     // Default retry options
-    if ( ! gotOptions.retry) {
+    if (!gotOptions.retry) {
       gotOptions.retry = 2;
+    }
+
+    // Default timeout options
+    if (!gotOptions.timeout) {
+      gotOptions.timeout = this.options.timeout;
     }
 
     return { ...gotOptions, ...this.overrideGotOptions };
@@ -189,7 +194,7 @@ export class KohoApiHelper {
 
   async _retryRequestOnThrottle(maxRetries: number, fn: any): Promise<any> {
     const result = await fn();
-    
+
     if (this.options.throttleOptions.enabled === true && result.throttle === true && maxRetries > 0) {
       await delay(this.options.throttleOptions.delay);
 
@@ -199,34 +204,32 @@ export class KohoApiHelper {
     }
   }
 
-  async request(url: string, method?: string, data?: any, params?: any, options?: any) : Promise<any> {
+  async request(url: string, method?: string, data?: any, params?: any, options?: any): Promise<any> {
     const gotOptions = this._setupRequest(url, method, data, params, options);
 
-    const result: any = await this._retryRequestOnThrottle(this.options.throttleOptions.maxRetries, () => 
-      got(url, gotOptions).json()
-    );
+    const result: any = await this._retryRequestOnThrottle(this.options.throttleOptions.maxRetries, () => got(url, gotOptions).json());
 
     if (result?.status === 'error') {
       throw new Error(result.message);
-    } 
+    }
 
     return result;
   }
 
-  async requestText(url: string, method?: string, data?: any, params?: any, options?: any) : Promise<any> {
+  async requestText(url: string, method?: string, data?: any, params?: any, options?: any): Promise<any> {
     const gotOptions = this._setupRequest(url, method, data, params, options);
 
     return await got(url, gotOptions).text();
   }
 
-  async requestBuffer(url: string, method?: string, data?: any, params?: any, options?: any) : Promise<any> {
+  async requestBuffer(url: string, method?: string, data?: any, params?: any, options?: any): Promise<any> {
     const gotOptions = this._setupRequest(url, method, data, params, options, true);
 
     return await got(url, gotOptions).buffer();
   }
 
   get _authParams() {
-    const params : any = {}
+    const params: any = {};
 
     if (this.options.enterpriseId) {
       params.enterprise_id = this.options.enterpriseId;
