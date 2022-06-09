@@ -7,7 +7,7 @@ API Helper for Koho Sales ERP (<http://www.kohosales.com/>)
 Install from npm:
 
 ```
-npm install koho-api-helper
+npm install @rantalainen/koho-api-helper
 ```
 
 ## Usage
@@ -173,6 +173,7 @@ const customer = await helper.customers.create({
 - 3.0.3 Add projectTemplates (experimental)
 - 3.1.0 Add throttle handling and throttleOptions to normal requests
 - 4.0.0 Implement timeout
+- 4.1.0 Add datafiles
 
 ## Miscellaneous examples
 

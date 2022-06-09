@@ -27,6 +27,7 @@ import { CompanyMethods } from './methods/company.methods';
 import { AccountingAssignmentMethods } from './methods/accounting-assignment.methods';
 import * as https from 'https';
 import { ProjectTemplateMethods } from './methods/project-template.methods';
+import { DatafileMethods } from './methods/datafile.methods';
 
 // delay function
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
@@ -93,6 +94,7 @@ export class KohoApiHelper {
   readonly companies: CompanyMethods;
   readonly accountingAssignments: AccountingAssignmentMethods;
   readonly projectTemplates: ProjectTemplateMethods;
+  readonly datafiles: DatafileMethods;
 
   constructor(options: KohoApiHelperOptions) {
     this.options = options || {};
@@ -146,6 +148,7 @@ export class KohoApiHelper {
     this.customReports = new CustomReportMethods(this);
     this.companies = new CompanyMethods(this);
     this.accountingAssignments = new AccountingAssignmentMethods(this);
+    this.datafiles = new DatafileMethods(this);
 
     /** projectTemplates functionality is experimental */
     this.projectTemplates = new ProjectTemplateMethods(this);
