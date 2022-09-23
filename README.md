@@ -174,6 +174,7 @@ const customer = await helper.customers.create({
 - 3.1.0 Add throttle handling and throttleOptions to normal requests
 - 4.0.0 Implement timeout
 - 4.1.0 Add datafiles
+- 4.2.0 Add incidents
 
 ## Miscellaneous examples
 
