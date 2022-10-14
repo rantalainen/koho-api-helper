@@ -1,11 +1,11 @@
-import { KohoApiHelper } from './index'
+import { KohoApiHelper } from './index';
 
 export class Methods {
   [x: string]: any;
   _uri: string;
   private _resourceRef: any;
 
-  constructor (helper: KohoApiHelper, uri: string, resourceRef: any, typeOverride?: string) {
+  constructor(helper: KohoApiHelper, uri: string, resourceRef: any, typeOverride?: string) {
     if (!helper || typeof helper !== 'object') {
       throw new Error('Incorrect or missing helper in resource initialization');
     }
@@ -21,10 +21,14 @@ export class Methods {
     this._helper = () => helper;
 
     // replace double slashes with one slash
-    this._uri = uri.replace('//','/');
+    this._uri = uri.replace('//', '/');
 
     // product_type//catalogs = product_type_catalog | work_session/assignments = assignment || contracts = contract
-    const type = uri.includes('//') ? uri.replace('//', '_').slice(0, -1) : uri.includes('/') ? uri.substring(uri.indexOf('/') + 1).slice(0, -1) : uri.slice(0, -1);
+    const type = uri.includes('//')
+      ? uri.replace('//', '_').slice(0, -1)
+      : uri.includes('/')
+      ? uri.substring(uri.indexOf('/') + 1).slice(0, -1)
+      : uri.slice(0, -1);
     this._type = typeOverride ? () => typeOverride : () => type;
 
     this._resourceRef = resourceRef;
@@ -39,20 +43,25 @@ export class Methods {
       }
     }
 
-    const object : any = {}; object[this._type()] = properties;
+    const object: any = {};
+    object[this._type()] = properties;
 
     return object;
   }
 
-  async request(uri: string, method?: string, data?: any, params?: any, options?: any) : Promise<any> {
+  async request(uri: string, method?: string, data?: any, params?: any, options?: any): Promise<any> {
     return await this._helper().request(`${this._helper().options.url}/${uri}`, method, data, params, options);
   }
 
-  async requestBuffer(uri: string, method?: string, data?: any, params?: any, options?: any) : Promise<Buffer> {
+  async requestBuffer(uri: string, method?: string, data?: any, params?: any, options?: any): Promise<Buffer> {
     return await this._helper().requestBuffer(`${this._helper().options.url}/${uri}`, method, data, params, options);
   }
 
-  async create(properties: any, ...args: any) : Promise<any> {
+  async requestText(uri: string, method?: string, data?: any, params?: any, options?: any): Promise<any> {
+    return await this._helper().requestText(`${this._helper().options.url}/${uri}`, method, data, params, options);
+  }
+
+  async create(properties: any, ...args: any): Promise<any> {
     // may be needed later
     if (typeof this._validateProperties === 'function') {
       this._validateProperties(properties);
@@ -66,7 +75,7 @@ export class Methods {
     return resource;
   }
 
-  async getAll(params: object = {}) : Promise<any[]> {
+  async getAll(params: object = {}): Promise<any[]> {
     const result = await this.request(this._uri, 'GET', null, params);
 
     const resources = result.map((r: any) => new this._resourceRef(r, this._helper()));
@@ -74,14 +83,14 @@ export class Methods {
     return resources;
   }
 
-  async getById(resourceId: number) : Promise<any> {
+  async getById(resourceId: number): Promise<any> {
     const result = await this.request(`${this._uri}/${resourceId}`);
 
     return new this._resourceRef(result, this._helper());
   }
 
-  async updateById(resourceId: number, properties: any) : Promise<void> {
-    if ( ! resourceId) {
+  async updateById(resourceId: number, properties: any): Promise<void> {
+    if (!resourceId) {
       throw new Error(`Cannot update ${this._type()}: No ${this._type()}.id specified`);
     }
 
@@ -91,7 +100,7 @@ export class Methods {
   }
 
   async deleteById(resourceId: number) {
-    if ( ! resourceId) {
+    if (!resourceId) {
       throw new Error(`Cannot delete ${this._type()}: No ${this._type()}.id specified`);
     }
 
