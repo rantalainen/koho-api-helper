@@ -29,9 +29,13 @@ import { AccountingAssignmentMethods } from './methods/accounting-assignment.met
 import * as https from 'https';
 import { ProjectTemplateMethods } from './methods/project-template.methods';
 import { DatafileMethods } from './methods/datafile.methods';
+import { HttpsAgent } from 'agentkeepalive';
 
 // delay function
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+// Create global https agent
+const httpsAgent = new HttpsAgent();
 
 export interface KohoThrottleOptions {
   maxRetries: number;
@@ -65,9 +69,14 @@ export class KohoApiHelper {
   [propName: string]: any;
   options: any;
 
-  keepAliveAgent: https.Agent = new https.Agent({
-    keepAlive: true
-  });
+  /** HTTPS KeepAliveAgent that can be overridden after KohoApiHelper has been initialized, uses KohoApiHelper scoped agent by default
+   * @example
+   * Enable by setting keepAliveAgent: true in constructor
+   * ```
+   * const koho = new KohoApiHelper({ ...options, keepAliveAgent: true });
+   * ```
+   */
+  keepAliveAgent: https.Agent = httpsAgent;
 
   readonly accountingTargets: AccountingTargetMethods;
   readonly customers: CustomerMethods;

@@ -176,6 +176,7 @@ const customer = await helper.customers.create({
 - 4.1.0 Add datafiles
 - 4.2.0 Add incidents
 - 4.2.1 Add requestText to custom-reports
+- 5.0.0 New HTTPS Keep Alive agent implementation and defaults with `agentkeepalive` package
 
 ## Miscellaneous examples
 
