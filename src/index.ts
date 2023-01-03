@@ -1,5 +1,5 @@
-import { default as got } from 'got';
-
+import { default as got, OptionsOfUnknownResponseBody } from 'got';
+import CacheableLookup from 'cacheable-lookup';
 import { CustomerMethods } from './methods/customer.methods';
 import { PersonMethods } from './methods/person.methods';
 import { InvoiceMethods } from './methods/invoice.methods';
@@ -52,7 +52,9 @@ type KohoApiHelperOptions = {
   /** Request timeout, can be changed before request, defaults to 30000 */
   timeout?: number;
 
-  /** Set to true if keepalive https-agent should be used with http requests to Koho */
+  /** Set to true if keepalive https-agent should be used with http requests to Koho
+   * @deprecated since 6.0.0 Keep Alive Agent is enabled by default, use `keepAliveAgent` with `false` value to disable
+   */
   useKeepAliveAgent?: boolean;
 
   /** You can use this property to override got request options */
@@ -63,20 +65,17 @@ type KohoApiHelperOptions = {
 
   /** Set Koho throttling options, defaults to retry 3 times on throttle with 15000ms delay */
   throttleOptions?: KohoThrottleOptions;
+
+  /** Instance of `https.Agent` or `true` to enable internal Keep Alive Agent, defaults to `true` */
+  keepAliveAgent?: boolean | https.Agent;
+
+  /** Instance of `cacheable-lookup` or `true` to enable internal DNS cache, defaults to `true` */
+  dnsCache?: boolean | CacheableLookup;
 };
 
 export class KohoApiHelper {
-  [propName: string]: any;
-  options: any;
-
-  /** HTTPS KeepAliveAgent that can be overridden after KohoApiHelper has been initialized, uses KohoApiHelper scoped agent by default
-   * @example
-   * Enable by setting keepAliveAgent: true in constructor
-   * ```
-   * const koho = new KohoApiHelper({ ...options, keepAliveAgent: true });
-   * ```
-   */
-  keepAliveAgent: https.Agent = httpsAgent;
+  // [propName: string]: any;
+  options: KohoApiHelperOptions;
 
   readonly accountingTargets: AccountingTargetMethods;
   readonly customers: CustomerMethods;
@@ -126,6 +125,16 @@ export class KohoApiHelper {
       this.options.url = 'https://suite.koho-online.com/api';
     }
 
+    // Use internal keepAliveAgent by default
+    if (this.options.keepAliveAgent === true || this.options.keepAliveAgent === undefined) {
+      this.options.keepAliveAgent = httpsAgent;
+    }
+
+    // Use internal dnsCache by default (falls back to got's dnsCache)
+    if (this.options.dnsCache === true || this.options.dnsCache === undefined) {
+      this.options.dnsCache = true;
+    }
+
     this.options.throttleOptions = {
       maxRetries: 3,
       delay: 15000,
@@ -171,7 +180,7 @@ export class KohoApiHelper {
       throw new Error('Missing URL for request');
     }
 
-    const gotOptions = {
+    const gotOptions: Partial<OptionsOfUnknownResponseBody> = {
       method: method || 'GET',
       searchParams: { ...this._authParams, ...params },
       ...options
@@ -181,12 +190,17 @@ export class KohoApiHelper {
       gotOptions.json = data;
     }
 
-    if (this.options?.useKeepAliveAgent === true) {
-      gotOptions.agent = { https: this.keepAliveAgent };
+    if (this.options.keepAliveAgent) {
+      gotOptions.agent = { https: this.options.keepAliveAgent as https.Agent };
+    }
+
+    if (this.options.dnsCache) {
+      gotOptions.dnsCache = this.options.dnsCache;
     }
 
     if (this.options?.disableStreaming !== true && disableStreaming !== true && gotOptions.method === 'GET') {
       // Using stream=true enables Koho API streaming
+      // @ts-ignore:next-line
       gotOptions.searchParams.stream = true;
     }
 
@@ -204,13 +218,13 @@ export class KohoApiHelper {
       gotOptions.timeout = this.options.timeout;
     }
 
-    return { ...gotOptions, ...this.overrideGotOptions };
+    return { ...gotOptions, ...this.options.overrideGotOptions };
   }
 
   async _retryRequestOnThrottle(maxRetries: number, fn: any): Promise<any> {
     const result = await fn();
 
-    if (this.options.throttleOptions.enabled === true && result.throttle === true && maxRetries > 0) {
+    if (this.options.throttleOptions?.enabled === true && result.throttle === true && maxRetries > 0) {
       await delay(this.options.throttleOptions.delay);
 
       return this._retryRequestOnThrottle(maxRetries - 1, fn);
@@ -222,7 +236,9 @@ export class KohoApiHelper {
   async request(url: string, method?: string, data?: any, params?: any, options?: any): Promise<any> {
     const gotOptions = this._setupRequest(url, method, data, params, options);
 
-    const result: any = await this._retryRequestOnThrottle(this.options.throttleOptions.maxRetries, () => got(url, gotOptions).json());
+    const result: any = await this._retryRequestOnThrottle(this.options.throttleOptions?.maxRetries || 0, () =>
+      got(url, gotOptions).json()
+    );
 
     if (result?.status === 'error') {
       throw new Error(result.message);

@@ -34,7 +34,10 @@ const kohoApiHelperOptions = {
   // Optional options
   enterpriseId: 1234, // Enterprise ID in Koho, if defined make sure to use enterprise token
   url: 'https://suite-beta.koho-online.com/api', // You can override API url with this property
-  useKeepAliveAgent: true, // If you are spamming multiple requests to Koho, you should set this to true so that connections are reused
+
+  // If you are spamming multiple requests to Koho, you should set this to true so that connections are reused
+  // This option was depcerated in 6.0.0, internal keepAliveAgent enabled by default
+  // useKeepAliveAgent: true,
 
   // Added in 2.0.0, disable streaming for Koho GET requests, defaults to false and GET requests are streamed
   disableStreaming: true,
@@ -44,7 +47,13 @@ const kohoApiHelperOptions = {
     enabled: true, // default: true
     delay: 30000, // default: 15000
     maxRetries: 1 // default: 3
-  }
+  },
+
+  // Disable keepAliveAgent, which is true by default (one can also pass own instance of https.Agent)
+  keepAliveAgent: false,
+
+  // Disable dnsCache, which is true by default (using got's cacheable-lookup)
+  dnsCache: false
 };
 
 const helper = new KohoApiHelper(kohoApiHelperOptions);
@@ -177,6 +186,7 @@ const customer = await helper.customers.create({
 - 4.2.0 Add incidents
 - 4.2.1 Add requestText to custom-reports
 - 5.0.0 New HTTPS Keep Alive agent implementation and defaults with `agentkeepalive` package
+- 6.0.0 Enable dnsCache and keepAliveAgent by default, update dependencies and typings
 
 ## Miscellaneous examples
 
