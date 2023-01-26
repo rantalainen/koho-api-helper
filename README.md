@@ -15,13 +15,13 @@ npm install @rantalainen/koho-api-helper
 ### Import to NodeJS project
 
 ```javascript
-const KohoApiHelper = require('koho-api-helper').KohoApiHelper;
+const KohoApiHelper = require('@rantalainen/koho-api-helper').KohoApiHelper;
 ```
 
 ### Import to TypeScript project
 
 ```javascript
-import { KohoApiHelper } from 'koho-api-helper';
+import { KohoApiHelper } from '@rantalainen/koho-api-helper';
 ```
 
 ### Setup with options
