@@ -22,7 +22,7 @@
   "dependencies": {
     "agentkeepalive": "^4.2.1",
     "form-data": "^3.0.0",
-    "got": "^11.8.6"
+    "got": "^12.5.3"
   },
   "files": [
     "dist/**/*"
