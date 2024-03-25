@@ -1,4 +1,3 @@
-import { settings } from 'cluster';
 import { KohoApiHelper } from '../index';
 import { Methods } from '../methods';
 import { CustomReport } from '../resources/custom-report.resource';
