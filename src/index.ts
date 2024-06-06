@@ -7,6 +7,7 @@ import { ContractMethods } from './methods/contract.methods';
 import { EmployeeMethods } from './methods/employee.methods';
 import { ProductMethods } from './methods/product.methods';
 import { ProjectMethods } from './methods/project.methods';
+import { ProjectTaskMethods } from './methods/project-task.methods';
 import { SaleMethods } from './methods/sale.methods';
 import { NotificationMethods } from './methods/notification.methods';
 import { IncidentMethods } from './methods/incident.methods';
@@ -88,6 +89,7 @@ export class KohoApiHelper {
   readonly products: ProductMethods;
   readonly productsCatalogs: ProductCatalogMethods;
   readonly projects: ProjectMethods;
+  readonly projectTasks: ProjectTaskMethods;
   readonly sales: SaleMethods;
   readonly notifications: NotificationMethods;
   readonly incidents: IncidentMethods;
@@ -156,6 +158,7 @@ export class KohoApiHelper {
     this.products = new ProductMethods(this);
     this.productsCatalogs = new ProductCatalogMethods(this);
     this.projects = new ProjectMethods(this);
+    this.projectTasks = new ProjectTaskMethods(this);
     this.sales = new SaleMethods(this);
     this.notifications = new NotificationMethods(this);
     this.incidents = new IncidentMethods(this);
