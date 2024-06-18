@@ -28,10 +28,8 @@ export interface WorkSessionAssignmentProperties {
   [propName: string]: any;
 }
 
-
-
 export class WorkSessionAssignment extends Resource {
-  constructor (properties: WorkSessionAssignmentProperties, helper: KohoApiHelper) {
+  constructor(properties: WorkSessionAssignmentProperties, helper: KohoApiHelper) {
     super(properties, helper, 'workSessionAssignment');
   }
 }
