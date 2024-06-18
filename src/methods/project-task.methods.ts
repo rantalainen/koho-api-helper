@@ -30,14 +30,11 @@ export class ProjectTaskMethods extends Methods {
 
   private parseArrayToProjectTasks(data: any[][]): ProjectTaskProperties[] {
     // Raw export data headers are in the first array
-    const headers: string[] = data[0];
+    const headers: string[] = data.shift()!;
 
     // Parse data to ProjectTaskProperties[]
     const tasks: ProjectTaskProperties[] = [];
     for (const item of data) {
-      // Skip headers
-      if (item === headers) continue;
-
       const obj: Record<string, any> = {};
       for (const [index, header] of headers.entries()) {
         obj[header] = item[index];
