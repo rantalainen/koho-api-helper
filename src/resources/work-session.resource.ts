@@ -24,7 +24,6 @@ export interface WorkSessionProductProperties {
   [propName: string]: any;
 }
 
-
 export interface WorkSessionProperties {
   id?: number;
   employee_name?: string;
@@ -44,7 +43,7 @@ export interface WorkSessionProperties {
   task_id?: number;
   date?: string;
   exchange_id?: number;
-  confirmed?: number;
+  confirmed?: number | boolean;
   rate_level_id?: number;
   customer_id?: number;
   contract_id?: number;
@@ -63,7 +62,7 @@ export interface WorkSessionProperties {
 }
 
 export class WorkSession extends Resource {
-  constructor (properties: WorkSessionProperties, helper: KohoApiHelper) {
+  constructor(properties: WorkSessionProperties, helper: KohoApiHelper) {
     super(properties, helper, 'workSessions');
   }
 }
