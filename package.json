@@ -1,6 +1,6 @@
 {
   "name": "@rantalainen/koho-api-helper",
-  "version": "6.1.0",
+  "version": "7.0.1",
   "description": "Koho Sales API helper library",
   "main": "dist/index.js",
   "scripts": {
