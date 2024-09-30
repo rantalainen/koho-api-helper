@@ -26,6 +26,9 @@ export class WorkSessionMethods extends Methods {
     return await super.deleteById(id);
   }
 
+  /** There are a lot of work sessions. It is preferable to define start_date and end_date in params. They can be specified in any parseable date format (YYYY-MM-DD for example).
+   * @param excludeProducts - Default = true, products will not be fetched for worksessions
+   */
   async export(params: object = {}, excludeProducts: boolean = true): Promise<WorkSessionProperties[]> {
     const result = await this.request(`${this._uri}/export`, 'GET', null, { ...params, format: 'json' });
 

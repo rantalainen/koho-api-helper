@@ -45,6 +45,7 @@ export class WorkSessionAssignmentMethods extends Methods {
     // Requirements need to be fetched separately
     // Excluded params from requirements request to ensure all requirements are fetched for worksession assignments
     const resultWithRequirements = await this.request(`${this._uri}/export`, 'GET', null, {
+      ...params,
       set: 'csv_export_requirements',
       format: 'json'
     });
