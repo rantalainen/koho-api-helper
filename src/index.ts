@@ -123,9 +123,12 @@ export class KohoApiHelper {
       this.options.timeout = 30000;
     }
 
-    if (!this.options.url) {
-      this.options.url = 'https://suite.koho-online.com/api';
+    if (!this.options.url && !process.env.KOHO_API_URL) {
+      throw new Error(`KohoApiHelper: Missing options.url or KOHO_API_URL environment variable`);
     }
+
+    // Use provided URL or environment variable
+    this.options.url = this.options.url || process.env.KOHO_API_URL;
 
     // Use internal keepAliveAgent by default
     if (this.options.keepAliveAgent === true || this.options.keepAliveAgent === undefined) {

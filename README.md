@@ -31,9 +31,13 @@ const kohoApiHelperOptions = {
   token: 'KOHO_API_TOKEN', // Token from Company Koho settings
   companyId: 1234, // Company ID in Koho, optional if enterpriseId is defined
 
-  // Optional options
-  enterpriseId: 1234, // Enterprise ID in Koho, if defined make sure to use enterprise token
-  url: 'https://suite-beta.koho-online.com/api', // You can override API url with this property
+  // Set Koho API url (you can also use KOHO_API_URL environment variable)
+  url: 'https://suite.koho.cloud/api',
+
+  // Optional:
+
+  // Enterprise ID in Koho, if defined make sure to use enterprise token
+  enterpriseId: 1234,
 
   // If you are spamming multiple requests to Koho, you should set this to true so that connections are reused
   // This option was depcerated in 6.0.0, internal keepAliveAgent enabled by default
@@ -166,27 +170,9 @@ const customer = await helper.customers.create({
 
 ## Changelog
 
-- 1.1.0 Add customersGroups and customersCategories resources
-- 1.2.0 Add notifications
-- 1.3.0 Add offers
-- 1.4.0 Add productsCatalogs + code refactoring
-- 1.5.0 Add customersFinancialStatements
-- 1.6.0 Add accountingTargets, employeeProfiles, employeeTeams
-- 1.7.0 Add workSessions, workSessionAssignments, workSessionAssignmentTemplates
-- 1.8.0 Add customReports
-- 1.9.0 Add workSessionShifts and workSessionShiftTypes, add new helper option useKeepAliveAgent
-- 1.10.0 Add support for updating notifications, companies methods, accounting assignments methods and better error messages
-- 2.0.0 Add streaming by default for GET requests to avoid throttling, can be disabled by disableStreaming option
-- 2.1.0 Add support for offer notifications (extends notifications methods)
-- 3.0.0 Update streaming and keepAliveAgent handling
-- 3.0.3 Add projectTemplates (experimental)
-- 3.1.0 Add throttle handling and throttleOptions to normal requests
-- 4.0.0 Implement timeout
-- 4.1.0 Add datafiles
-- 4.2.0 Add incidents
-- 4.2.1 Add requestText to custom-reports
-- 5.0.0 New HTTPS Keep Alive agent implementation and defaults with `agentkeepalive` package
-- 6.0.0 Enable dnsCache and keepAliveAgent by default, update dependencies and typings
+Changelog has moved to releases.
+
+For older changelog, please refer to [old-changelog branch](https://github.com/rantalainen/koho-api-helper/tree/old-changelog?tab=readme-ov-file#changelog).
 
 ## Miscellaneous examples
 
